@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "556901079986",
+    "firebase_url": "https://garden-da58e.firebaseio.com",
+    "project_id": "garden-da58e",
+    "storage_bucket": "garden-da58e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556901079986:android:2b9e8d955232d44c",
+        "android_client_info": {
+          "package_name": "com.garden.garden"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "556901079986-dt2fu9ioragq1hda7g3fmv895p2fnmq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9I5q53z5BX7bG6bQtAyVf3KOL8QoCJYc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

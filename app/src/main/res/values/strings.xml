@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">garden</string>
+    <string name="email_address_hint">Enter Your Email Address</string>
+    <string name="password_hint">Enter your Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="not_registered">New User? Sign Up Here</string>
+    <string name="password_again">Enter your Password again</string>
+    <string name="register">Register</string>
+    <string name="already_registered">Already Registered? Sign In Here</string>
+    <string name="forgot_password">forgot password?</string>
+    <string name="full_name">Enter Full Name</string>
+    <string name="error_user_exists">Account already exists</string>
+    <string name="error_invalid_email">Invalid Email</string>
+    <string name="error_weak_password">Password length must be atleast 6</string>
+    <string name="email_not_verfied">Email not verifed</string>
+    <string name="not_verfied_text">Please very your Email Address</string>
+    <string name="refresh">Refresh</string>
+    <string name="signing_text">Signing In</string>
+    <string name="please_wait">Please wait</string>
+    <string name="signup_please_wait">Please wait while we setup your account</string>
+</resources>
