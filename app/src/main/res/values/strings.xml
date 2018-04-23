@@ -12,10 +12,17 @@
     <string name="error_user_exists">Account already exists</string>
     <string name="error_invalid_email">Invalid Email</string>
     <string name="error_weak_password">Password length must be atleast 6</string>
-    <string name="email_not_verfied">Email not verifed</string>
-    <string name="not_verfied_text">Please very your Email Address</string>
+    <string name="email_not_verfied">Email not verified</string>
+    <string name="not_verfied_text">Please verify your Email Address</string>
     <string name="refresh">Refresh</string>
     <string name="signing_text">Signing In</string>
     <string name="please_wait">Please wait</string>
     <string name="signup_please_wait">Please wait while we setup your account</string>
+    <string name="account_does_not_exist">Account does not exist</string>
+    <string name="password_incorrect">Incorrect Password </string>
+    <string name="logout">Logout</string>
+    <string name="no_device_text">No Device Found</string>
+    <string name="go_to_market">Go to Market</string>
+    <string name="plant">Plant</string>
+    <string name="buy_now">Buy Now</string>
 </resources>

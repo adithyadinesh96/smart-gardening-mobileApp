@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
@@ -94,7 +95,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         goToHome();
                     } else {
                             signin_dialog.dismiss();
-                            Toast.makeText(LoginActivity.this, "Error Logging In", Toast.LENGTH_SHORT).show();
+                            try{
+                                throw task.getException();
+                            }catch (FirebaseAuthInvalidUserException e){
+                                loginEmailAddress.setError(getString(R.string.account_does_not_exist));
+                                loginEmailAddress.requestFocus();
+                            }
+                            catch (FirebaseAuthInvalidCredentialsException e){
+                                loginPassword.setError(getString(R.string.password_incorrect));
+                                loginPassword.requestFocus();
+                            }
+                            catch(Exception e) {
+
+                            }
 
                     }
                 }

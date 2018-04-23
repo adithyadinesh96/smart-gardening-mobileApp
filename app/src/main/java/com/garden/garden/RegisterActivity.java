@@ -132,9 +132,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                     } catch(FirebaseAuthWeakPasswordException e) {
                                     registerPassword.setError(getString(R.string.error_weak_password));
                                     registerPassword.requestFocus();
-                                    } catch(FirebaseAuthInvalidCredentialsException e) {
-                                        registerEmail.setError(getString(R.string.error_invalid_email));
-                                        registerEmail.requestFocus();
                                     } catch(FirebaseAuthUserCollisionException e) {
                                     registerEmail.setError(getString(R.string.error_user_exists));
                                     registerEmail.requestFocus();
