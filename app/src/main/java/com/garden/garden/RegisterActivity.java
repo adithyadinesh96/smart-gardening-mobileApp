@@ -105,7 +105,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             if(task.isSuccessful()){
                                 String uid = mAuth.getCurrentUser().getUid();
                                 String email = mAuth.getCurrentUser().getEmail();
-                                User user = new User(full_name, email,0);
+                                User user = new User(full_name, email,0,0);
                                 mDatabase.child("users").child(uid).setValue(user);
                                 currentUser = mAuth.getCurrentUser();
                                 currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {

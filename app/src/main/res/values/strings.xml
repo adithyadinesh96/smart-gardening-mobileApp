@@ -25,4 +25,7 @@
     <string name="go_to_market">Go to Market</string>
     <string name="plant">Plant</string>
     <string name="buy_now">Buy Now</string>
+    <string name="enter_device_name">Device Name</string>
+    <string name="save">Save</string>
+    <string name="close">Close</string>
 </resources>

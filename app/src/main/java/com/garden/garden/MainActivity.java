@@ -2,9 +2,12 @@ package com.garden.garden;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +17,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,8 +25,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.razorpay.Checkout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 //Todo on press of back button pause activity go to home screen..
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private Button logout;
@@ -33,6 +40,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     private Button goToMarket;
     private TextView noDevice;
+    private RecyclerView rv;
+    DeviceAdapter adapter;
+    public List<DeviceData> deviceDataList;
+    public List<String> deviceList;
+    private String deviceName;
+    private int switchState;
+    private String url;
+    private int deviceFound = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +61,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         goToMarket = findViewById(R.id.go_to_market);
         goToMarket.setOnClickListener(this);
         noDevice = findViewById(R.id.no_device_text);
+        rv = findViewById(R.id.main_recycler);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        rv.setLayoutManager(llm);
+        deviceList = new ArrayList<>();
+        deviceDataList = new ArrayList<>();
+        rv.setHasFixedSize(true);
 
 
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -58,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             uid = currentUser.getUid();
             DatabaseReference user_ref = FirebaseDatabase.getInstance().getReference().child("users").child(uid);
-            if(!currentUser.isEmailVerified()){
+            if (!currentUser.isEmailVerified()) {
                 MaterialDialog dialog = new MaterialDialog.Builder(this)
                         .title(R.string.email_not_verfied)
                         .content(R.string.not_verfied_text)
@@ -83,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }, 1000L);
                             }
                         })
-                        .onPositive(new MaterialDialog.SingleButtonCallback(){
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(MaterialDialog dialog, DialogAction which) {
                                 mAuth.signOut();
@@ -91,47 +114,77 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         })
                         .show();
-            }
-            else {
+            } else {
                 final MaterialDialog loading_dialog = new MaterialDialog.Builder(this)
                         .content(R.string.please_wait)
                         .progress(true, 0)
                         .cancelable(false)
                         .show();
-                user_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                DatabaseReference device_ref = FirebaseDatabase.getInstance().getReference().child("devices");
+                device_ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(!dataSnapshot.hasChild("devices")){
-                            loading_dialog.dismiss();
-                            //Snackbar.make(mcontraint,"No devices found",Snackbar.LENGTH_INDEFINITE).show();
+                        deviceDataList = new ArrayList<>();
+                        Log.d("UID", uid);
+                        for (DataSnapshot device : dataSnapshot.getChildren()) {
+                            Log.d("Device", device.getKey());
+                            try {
+                                if (device.child("uid").getValue().equals(uid)) {
+                                    deviceFound++;
+                                    deviceName = device.child("device_name").getValue().toString();
+                                    url = device.child("image_url").getValue().toString();
+                                    switchState = Integer.parseInt(device.child("switch_state").getValue().toString());
+                                    deviceDataList.add(new DeviceData(deviceName, switchState, 0, url));
+                                }
+                            }
+                            catch(NullPointerException nullPointer){
+                                restartActivity();
+                            }
+                            catch (Exception e) {
+                                restartActivity();
+                            }
+                        }
+                        if (deviceFound == 0) {
                             noDevice.setVisibility(View.VISIBLE);
                             goToMarket.setVisibility(View.VISIBLE);
+                        } else {
+                            goToMarket.setVisibility(View.VISIBLE);
+                            adapter = new DeviceAdapter(MainActivity.this, deviceDataList);
+                            rv.setAdapter(adapter);
                         }
+                        loading_dialog.dismiss();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e(TAG,"Database error" + databaseError.getMessage());
+
                     }
                 });
             }
+
         }
     }
 
+    private void restartActivity() {
+        Intent mIntent = getIntent();
+        mIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        startActivity(mIntent);
+    }
 
     @Override
     public void onClick(View v) {
-        if(v == logout){
+        if (v == logout) {
             mAuth.signOut();
             Checkout.clearUserData(this);
             gotoLogin();
-        }
-        else if(v == goToMarket){
+        } else if (v == goToMarket) {
             Intent in = new Intent(this, MarketActivity.class);
             startActivity(in);
         }
     }
-    private void gotoLogin(){
+
+    private void gotoLogin() {
         Intent in = new Intent(this, LoginActivity.class);
         in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(in);

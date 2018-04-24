@@ -2,6 +2,8 @@ package com.garden.garden;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +28,9 @@ import com.razorpay.PaymentResultListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class CheckoutActivity extends AppCompatActivity implements PaymentResultListener, View.OnClickListener {
     private Button buy_now;
@@ -39,11 +46,17 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
     private String scientific_name;
     private String description;
     private String url;
+    private String uid;
+    private long deviceCount = 0;
+    private String deviceName;
+    DatabaseReference device_ref;
+    DatabaseReference user_ref;
+    Date today;
+    private String mPaymentId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
-        Checkout.preload(getApplicationContext());
         mAuth = FirebaseAuth.getInstance();
         buy_now = findViewById(R.id.buy_plant_button);
         product_plant_name = findViewById(R.id.product_plant_name);
@@ -96,8 +109,44 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
     }
 
     @Override
-    public void onPaymentSuccess(String s) {
-        Intent in = new Intent(this,MainActivity.class);
+    public void onPaymentSuccess(String payment_id) {
+        uid = currentUser.getUid();
+        mPaymentId = payment_id;
+        today = Calendar.getInstance().getTime();
+        user_ref = FirebaseDatabase.getInstance().getReference().child("users").child(uid);
+        device_ref = FirebaseDatabase.getInstance().getReference().child("devices");
+        user_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                    deviceCount = Integer.parseInt(dataSnapshot.child("device_count").getValue().toString());
+                    deviceCount++;
+                    String did;
+                    if(deviceCount < 9) {
+                         did = "d0" + deviceCount + uid;
+                    }
+                    else {
+                         did = "d" + deviceCount + uid;
+                    }
+                    user_ref.child("device_count").setValue(deviceCount);
+                    device_ref.child(did).child("device_name").setValue("Device "+ deviceCount);
+                    device_ref.child(did).child("uid").setValue(uid);
+                    device_ref.child(did).child("transaction_id").setValue(mPaymentId);
+                    device_ref.child(did).child("payment_date").setValue(today);
+                    device_ref.child(did).child("plant_name").setValue(plant_name);
+                    device_ref.child(did).child("is_installed").setValue(0);
+                    device_ref.child(did).child("switch_state").setValue(0);
+                    device_ref.child(did).child("image_url").setValue(url);
+                    gotoHome();
+                }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void gotoHome() {
+        Intent in = new Intent(this, MainActivity.class);
         in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(in);
     }

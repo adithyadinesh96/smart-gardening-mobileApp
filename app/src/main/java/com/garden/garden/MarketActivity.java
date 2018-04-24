@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.razorpay.Checkout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class MarketActivity extends AppCompatActivity {
         plantDataList = new ArrayList<>();
         rv.setHasFixedSize(true);
         DatabaseReference plant_ref = FirebaseDatabase.getInstance().getReference().child("plants");
+        Checkout.preload(getApplicationContext());
         plant_ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

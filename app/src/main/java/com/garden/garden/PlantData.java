@@ -1,7 +1,5 @@
 package com.garden.garden;
 
-import java.util.List;
-
 class PlantData {
     private String name;
     private String image_url;

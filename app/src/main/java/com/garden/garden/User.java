@@ -8,15 +8,14 @@ class User {
     public String fullname;
     public String email;
     public int isActive;
+    public int device_count;
 
-    public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
-    }
 
-    public User(String fullname, String email, int isActive) {
+    public User(String fullname, String email, int isActive, int device_count) {
         this.fullname = fullname;
         this.email = email;
         this.isActive = isActive;
+        this.device_count = device_count;
     }
 
 }
