@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
     private TextView product_scientific_name;
     private ImageView product_image;
     private TextView product_description;
+    private TextView checkoutPrice;
     private static final String TAG = "CheckoutActivity";
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -47,12 +49,15 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
     private String description;
     private String url;
     private String uid;
+    private String total_price;
+    private ConstraintLayout checkout_constraint;
     private long deviceCount = 0;
     private String deviceName;
     DatabaseReference device_ref;
     DatabaseReference user_ref;
     Date today;
     private String mPaymentId;
+    private MaterialDialog loading_dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +68,8 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
         product_scientific_name = findViewById(R.id.product_scientific_name);
         product_image = findViewById(R.id.product_plant_image);
         product_description = findViewById(R.id.product_description);
+        checkoutPrice = findViewById(R.id.checkout_price);
+        checkout_constraint = findViewById(R.id.checkout_constraint);
 
         buy_now.setOnClickListener(this);
         Bundle extras = getIntent().getExtras();
@@ -77,6 +84,11 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
             gotoLogin();
         }
         else{
+            final MaterialDialog loading_dialog = new MaterialDialog.Builder(this)
+                    .content(R.string.please_wait)
+                    .progress(true, 0)
+                    .cancelable(false)
+                    .show();
             DatabaseReference plant_ref = FirebaseDatabase.getInstance().getReference().child("plants").child(plant_name);
             plant_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -84,10 +96,13 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
                     scientific_name = dataSnapshot.child("scientific_name").getValue().toString();
                     description = dataSnapshot.child("description").getValue().toString();
                     url = dataSnapshot.child("image_url").getValue().toString();
-                    Picasso.get().load(url).placeholder(R.drawable.spinningwheel).into(product_image);
+                    total_price = dataSnapshot.child("price").getValue().toString();
+                    Picasso.get().load(url).placeholder(R.drawable.loading).into(product_image);
                     product_plant_name.setText(plant_name);
                     product_scientific_name.setText(scientific_name);
                     product_description.setText(description);
+                    checkoutPrice.setText("Total Price \u20B9 "+ total_price);
+                    loading_dialog.dismiss();
                 }
 
                 @Override
@@ -97,8 +112,6 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
 
 
             });
-
-
         }
 
     }
@@ -121,7 +134,7 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
                     deviceCount = Integer.parseInt(dataSnapshot.child("device_count").getValue().toString());
                     deviceCount++;
                     String did;
-                    if(deviceCount < 9) {
+                    if(deviceCount < 10) {
                          did = "d0" + deviceCount + uid;
                     }
                     else {
@@ -130,6 +143,7 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
                     user_ref.child("device_count").setValue(deviceCount);
                     device_ref.child(did).child("device_name").setValue("Device "+ deviceCount);
                     device_ref.child(did).child("uid").setValue(uid);
+                    device_ref.child(did).child("temperature").setValue(25);
                     device_ref.child(did).child("transaction_id").setValue(mPaymentId);
                     device_ref.child(did).child("payment_date").setValue(today);
                     device_ref.child(did).child("plant_name").setValue(plant_name);
@@ -153,21 +167,30 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
 
     @Override
     public void onPaymentError(int i, String s) {
+        loading_dialog.dismiss();
         Toast.makeText(this,"There was error in making payment",Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onClick(View v) {
         if(v == buy_now){
+            checkout_constraint.setVisibility(View.INVISIBLE);
+             loading_dialog = new MaterialDialog.Builder(this)
+                    .content(R.string.please_wait)
+                    .progress(true, 0)
+                    .cancelable(false)
+                    .show();
+            Integer r_price = (Integer.parseInt(total_price)*100);
             Checkout checkout = new Checkout();
-            checkout.setImage(R.drawable.jasmin);
+            checkout.setFullScreenDisable(true);
+            checkout.setImage(R.drawable.app_icon);
             final Activity activity = this;
             try {
                 JSONObject options = new JSONObject();
                 options.put("name", "Garden");
                 options.put("description", "Order #123456");
                 options.put("currency", "INR");
-                options.put("amount", "100");
+                options.put("amount",r_price);
                 checkout.open(activity, options);
             } catch(Exception e) {
                 Log.e(TAG, "Error in starting Razorpay Checkout", e);

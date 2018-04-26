@@ -37,7 +37,7 @@ public class PlantAdapter extends RecyclerView.Adapter<PlantAdapter.PlantViewHol
     @Override
     public void onBindViewHolder(@NonNull PlantViewHolder holder, int position) {
     PlantData plantData = plantDataList.get(position);
-    Picasso.get().load(plantData.getImage_url()).placeholder(R.drawable.spinningwheel).into(holder.imageView);
+    Picasso.get().load(plantData.getImage_url()).placeholder(R.drawable.loading).into(holder.imageView);
     holder.textView.setText(plantData.getName());
 
     }

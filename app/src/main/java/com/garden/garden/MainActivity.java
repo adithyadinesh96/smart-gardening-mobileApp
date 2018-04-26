@@ -48,11 +48,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int switchState;
     private String url;
     private int deviceFound = 0;
+    private String deviceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Checkout.preload(getApplicationContext());
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         logout = findViewById(R.id.logout);
@@ -131,10 +133,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             try {
                                 if (device.child("uid").getValue().equals(uid)) {
                                     deviceFound++;
+                                    deviceId = device.getKey();
                                     deviceName = device.child("device_name").getValue().toString();
                                     url = device.child("image_url").getValue().toString();
                                     switchState = Integer.parseInt(device.child("switch_state").getValue().toString());
-                                    deviceDataList.add(new DeviceData(deviceName, switchState, 0, url));
+                                    deviceDataList.add(new DeviceData(deviceId,deviceName, switchState, 0, url));
                                 }
                             }
                             catch(NullPointerException nullPointer){

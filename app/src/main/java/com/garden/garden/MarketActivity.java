@@ -32,7 +32,6 @@ public class MarketActivity extends AppCompatActivity {
         plantDataList = new ArrayList<>();
         rv.setHasFixedSize(true);
         DatabaseReference plant_ref = FirebaseDatabase.getInstance().getReference().child("plants");
-        Checkout.preload(getApplicationContext());
         plant_ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

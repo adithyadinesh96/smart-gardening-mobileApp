@@ -5,12 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
-
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/app_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
@@ -23,13 +22,17 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MarketActivity" />
-        <activity android:name=".CheckoutActivity"></activity>
+        <activity android:name=".CheckoutActivity" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_test_QwkuEYBt48nMsI"
-            />
+            android:value="rzp_test_QwkuEYBt48nMsI" />
 
+        <activity android:name=".DeviceDetails" />
+        <activity
+            android:name=".test"
+            android:label="@string/title_activity_test"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
