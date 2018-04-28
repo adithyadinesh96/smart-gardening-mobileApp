@@ -36,7 +36,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
         DeviceData deviceData = deviceDataList.get(position);
-        Picasso.get().load(deviceData.getUrl()).placeholder(R.drawable.loading).into(holder.imageView);
+        Picasso.get().load(deviceData.getUrl()).into(holder.imageView);
         holder.textView1.setText(deviceData.getDeviceName());
         if(deviceData.getSwitchState() == 1){
             holder.textView2.setText("On");

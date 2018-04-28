@@ -43,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.withActionAppTheme);
         setContentView(R.layout.activity_register);
         mAuth = FirebaseAuth.getInstance();
         registerButton = findViewById(R.id.register_button);

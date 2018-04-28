@@ -5,10 +5,16 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,7 +39,7 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.Date;
 
-public class CheckoutActivity extends AppCompatActivity implements PaymentResultListener, View.OnClickListener {
+public class CheckoutActivity extends AppCompatActivity implements PaymentResultListener, View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     private Button buy_now;
     private TextView product_plant_name;
     private TextView product_scientific_name;
@@ -58,20 +64,35 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
     Date today;
     private String mPaymentId;
     private MaterialDialog loading_dialog;
+    private TextView nav_name;
+    private TextView nav_email;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checkout);
+        setContentView(R.layout.activity_checkout_main);
         mAuth = FirebaseAuth.getInstance();
         buy_now = findViewById(R.id.buy_plant_button);
         product_plant_name = findViewById(R.id.product_plant_name);
         product_scientific_name = findViewById(R.id.product_scientific_name);
         product_image = findViewById(R.id.product_plant_image);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
         product_description = findViewById(R.id.product_description);
         checkoutPrice = findViewById(R.id.checkout_price);
         checkout_constraint = findViewById(R.id.checkout_constraint);
-
         buy_now.setOnClickListener(this);
+        nav_name = header.findViewById(R.id.nav_name);
+        nav_email = header.findViewById(R.id.nav_email);
         Bundle extras = getIntent().getExtras();
         plant_name = extras.getString("plant_name");
     }
@@ -84,11 +105,14 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
             gotoLogin();
         }
         else{
+            uid = currentUser.getUid();
+            user_ref = FirebaseDatabase.getInstance().getReference().child("users").child(uid);
             final MaterialDialog loading_dialog = new MaterialDialog.Builder(this)
                     .content(R.string.please_wait)
                     .progress(true, 0)
                     .cancelable(false)
                     .show();
+            nav_email.setText(currentUser.getEmail());
             DatabaseReference plant_ref = FirebaseDatabase.getInstance().getReference().child("plants").child(plant_name);
             plant_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -123,10 +147,8 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
 
     @Override
     public void onPaymentSuccess(String payment_id) {
-        uid = currentUser.getUid();
         mPaymentId = payment_id;
         today = Calendar.getInstance().getTime();
-        user_ref = FirebaseDatabase.getInstance().getReference().child("users").child(uid);
         device_ref = FirebaseDatabase.getInstance().getReference().child("devices");
         user_ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -166,9 +188,10 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
     }
 
     @Override
-    public void onPaymentError(int i, String s) {
+    public void onPaymentError(int code, String response) {
+        checkout_constraint.setVisibility(View.VISIBLE);
         loading_dialog.dismiss();
-        Toast.makeText(this,"There was error in making payment",Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -180,22 +203,85 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
                     .progress(true, 0)
                     .cancelable(false)
                     .show();
-            Integer r_price = (Integer.parseInt(total_price)*100);
+            int r_price = (Integer.parseInt(total_price)*100);
             Checkout checkout = new Checkout();
             checkout.setFullScreenDisable(true);
             checkout.setImage(R.drawable.app_icon);
-            final Activity activity = this;
-            try {
-                JSONObject options = new JSONObject();
-                options.put("name", "Garden");
-                options.put("description", "Order #123456");
-                options.put("currency", "INR");
-                options.put("amount",r_price);
-                checkout.open(activity, options);
-            } catch(Exception e) {
-                Log.e(TAG, "Error in starting Razorpay Checkout", e);
-                Toast.makeText(this,"Error in starting Razorpay Checkout",Toast.LENGTH_LONG).show();
-            }
+            Activity activity = this;
+            callRazorpay(checkout,r_price,activity);
         }
     }
+
+
+    public void callRazorpay(Checkout checkout,int r_price,Activity activity){
+        try {
+            JSONObject options = new JSONObject();
+            options.put("name", "Garden");
+            options.put("description", "Order #123456");
+            options.put("currency", "INR");
+            options.put("amount", r_price);
+            checkout.open(activity, options);
+        }
+        catch (Exception e){
+            callRazorpay(checkout,r_price,activity);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.nav_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void goMarket() {
+        Intent in = new Intent(this,MarketActivity.class);
+        startActivity(in);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        if(id == R.id.nav_my_devices){
+            gotoHome();
+        }
+        if (id == R.id.nav_logout) {
+            mAuth.signOut();
+            Checkout.clearUserData(this);
+            gotoLogin();
+        }
+        if(id == R.id.nav_market){
+            goMarket();
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
 }
