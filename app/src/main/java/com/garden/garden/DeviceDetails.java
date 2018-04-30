@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.razorpay.Checkout;
 import com.squareup.picasso.Picasso;
 
-public class DeviceDetails extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, NavigationView.OnNavigationItemSelectedListener {
+public class DeviceDetails extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     private FirebaseAuth mAuth;
     private String device_id;
     private FirebaseUser currentUser;
@@ -42,6 +42,7 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
     private int switchState;
     private TextView nav_name;
     private TextView nav_email;
+    private ImageView changeDeviceName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +54,8 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
         waterState = findViewById(R.id.device_details_water_state);
         temperature = findViewById(R.id.device_details_temperature_reading);
         waterSwitch = findViewById(R.id.device_details_water_switch);
+        changeDeviceName = findViewById(R.id.changeDeviceName);
+        changeDeviceName.setOnClickListener(this);
         waterSwitch.setOnCheckedChangeListener(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -184,4 +187,10 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
         return true;
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v == changeDeviceName){
+            
+        }
+    }
 }

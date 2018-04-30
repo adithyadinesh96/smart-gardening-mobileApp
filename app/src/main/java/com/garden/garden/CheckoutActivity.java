@@ -172,6 +172,7 @@ public class CheckoutActivity extends AppCompatActivity implements PaymentResult
                     device_ref.child(did).child("is_installed").setValue(0);
                     device_ref.child(did).child("switch_state").setValue(0);
                     device_ref.child(did).child("image_url").setValue(url);
+                    device_ref.child(did).child("mode").setValue(1);
                     gotoHome();
                 }
             @Override
