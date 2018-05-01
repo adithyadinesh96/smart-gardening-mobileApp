@@ -40,4 +40,9 @@
     <string name="title_activity_main2">Main2Activity</string>
     <string name="drawer_open">drawer_open</string>
     <string name="drawer_closed">drawer_closed</string>
+    <string name="device_name_content">Enter Device Name</string>
+    <string name="blank" />
+    <string name="cancel">Cancel</string>
+    <string name="Mode">Device Mode</string>
+    <string name="automatic_mode">Device is in automatic mode change to manual mode to change switch manually</string>
 </resources>
