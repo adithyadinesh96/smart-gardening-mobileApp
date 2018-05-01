@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">garden</string>
+    <string name="app_name">Smart Garden</string>
     <string name="email_address_hint">Enter Your Email Address</string>
     <string name="password_hint">Enter your Password</string>
     <string name="sign_in">Sign In</string>
@@ -44,5 +44,15 @@
     <string name="blank" />
     <string name="cancel">Cancel</string>
     <string name="Mode">Device Mode</string>
-    <string name="automatic_mode">Device is in automatic mode change to manual mode to change switch manually</string>
+    <string name="automatic_mode">Device in auto mode change mode to change switch manually</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="reset">Reset</string>
+    <string name="password_reset_sent">Password Reset Email has been successfully sent</string>
+    <string name="user_not_registered">Email Address not registered</string>
+    <string name="iAgree">I Agree</string>
+    <string name="iDisagree">I Disagree</string>
+    <string name="passwords_wont_match">Passwords wont match</string>
+    <string name="disclaimer">I agree that the products shown in the marketplace of Smart Garden android application are sample items and the payment paid in any form is not paid for the shown devices. I will not claim any product that was bought on the Smart Garden Application in any mode of payment and I will not demand a refund of money for the same.</string>
+    <string name="compulsory_field">This field is compulsory</string>
+    <string name="disclaimerTitle">Disclaimer</string>
 </resources>

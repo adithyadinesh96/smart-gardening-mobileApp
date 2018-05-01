@@ -1,4 +1,4 @@
-package com.garden.garden;
+package com.smart_garden.garden;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -37,6 +37,7 @@ public class MarketActivity extends AppCompatActivity implements NavigationView.
     private TextView nav_email;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class MarketActivity extends AppCompatActivity implements NavigationView.
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
         nav_name = header.findViewById(R.id.nav_name);
@@ -71,6 +72,7 @@ public class MarketActivity extends AppCompatActivity implements NavigationView.
         if (currentUser == null) {
             gotoLogin();
         } else {
+            navigationView.setCheckedItem(R.id.nav_market);
             DatabaseReference plant_ref = FirebaseDatabase.getInstance().getReference().child("plants");
             plant_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -116,8 +118,7 @@ public class MarketActivity extends AppCompatActivity implements NavigationView.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.nav_menu, menu);
-        return true;
+        return false;
     }
 
     @Override
@@ -154,9 +155,6 @@ public class MarketActivity extends AppCompatActivity implements NavigationView.
             mAuth.signOut();
             Checkout.clearUserData(this);
             gotoLogin();
-        }
-        if(id == R.id.nav_market){
-
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

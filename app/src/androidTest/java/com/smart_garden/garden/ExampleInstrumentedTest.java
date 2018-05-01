@@ -1,4 +1,4 @@
-package com.garden.garden;
+package com.smart_garden.garden;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package com.garden.garden;
+package com.smart_garden.garden;
 
 class PlantData {
     private String name;

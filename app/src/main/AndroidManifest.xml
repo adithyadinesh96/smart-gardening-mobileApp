@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.garden.garden">
+    package="com.smart_garden.garden">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -12,22 +12,22 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.smart_garden.garden.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".MarketActivity" />
-        <activity android:name=".CheckoutActivity" />
+        <activity android:name="com.smart_garden.garden.LoginActivity" />
+        <activity android:name="com.smart_garden.garden.RegisterActivity" />
+        <activity android:name="com.smart_garden.garden.MarketActivity" />
+        <activity android:name="com.smart_garden.garden.CheckoutActivity" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="rzp_test_QwkuEYBt48nMsI" />
 
-        <activity android:name=".DeviceDetails" />
+        <activity android:name="com.smart_garden.garden.DeviceDetails" />
     </application>
 
 </manifest>

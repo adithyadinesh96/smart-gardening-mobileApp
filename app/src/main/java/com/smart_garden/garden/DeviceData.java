@@ -1,4 +1,4 @@
-package com.garden.garden;
+package com.smart_garden.garden;
 
 public class DeviceData {
     private String deviceId;
