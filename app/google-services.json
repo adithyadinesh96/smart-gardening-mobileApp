@@ -10,10 +10,14 @@
       "client_info": {
         "mobilesdk_app_id": "1:556901079986:android:2b9e8d955232d44c",
         "android_client_info": {
-          "package_name": "com.smart_garden.garden"
+          "package_name": "com.garden.garden"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "556901079986-qed7d89odhu64v30kc2n072cq0sjkpnm.apps.googleusercontent.com",
+          "client_type": 3
+        },
         {
           "client_id": "556901079986-dt2fu9ioragq1hda7g3fmv895p2fnmq2.apps.googleusercontent.com",
           "client_type": 3
@@ -31,6 +35,54 @@
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556901079986:android:a32ebc51ed112b8b",
+        "android_client_info": {
+          "package_name": "com.smart_garden.garden"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "556901079986-p87tmmkjcrjumdjl18nmmmaog60kjb24.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smart_garden.garden",
+            "certificate_hash": "c4b6fd98167895885fa85541a445dda420fedb76"
+          }
+        },
+        {
+          "client_id": "556901079986-qed7d89odhu64v30kc2n072cq0sjkpnm.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "556901079986-dt2fu9ioragq1hda7g3fmv895p2fnmq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9I5q53z5BX7bG6bQtAyVf3KOL8QoCJYc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "556901079986-qed7d89odhu64v30kc2n072cq0sjkpnm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
