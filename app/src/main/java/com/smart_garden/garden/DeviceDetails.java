@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,6 +53,7 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
     private ToggleButton deviceMode;
     private int deviceModeValue;
     private MaterialDialog alert_dialog;
+    private Button analyseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,10 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
         waterSwitch.setOnCheckedChangeListener(this);
         deviceMode = findViewById(R.id.device_mode_toggle);
         deviceMode.setOnCheckedChangeListener(this);
+        waterSwitch.setOnClickListener(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        analyseButton = findViewById(R.id.device_details_analyse);
+        analyseButton.setOnClickListener(this);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -145,18 +150,6 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
                 } else {
                     waterSwitch.setChecked(false);
                 }
-                alert_dialog = new MaterialDialog.Builder(this)
-                        .content(R.string.automatic_mode)
-                        .positiveText("Ok")
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                alert_dialog.dismiss();
-                            }
-                        })
-                        .cancelable(false)
-                        .show();
-
             } else {
                 if (isChecked) {
                     device_ref.child("switch_state").setValue(1);
@@ -268,6 +261,26 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
                         }
                     })
                     .show();
+        }
+        else if(v == analyseButton){
+            Intent in = new Intent(DeviceDetails.this,CameraActivity.class);
+            in.putExtra("device_id",this.device_id);
+            startActivity(in);
+        }
+        else if(v==waterSwitch){
+            if(deviceModeValue == 1){
+                alert_dialog = new MaterialDialog.Builder(this)
+                        .content(R.string.automatic_mode)
+                        .positiveText("Ok")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                alert_dialog.dismiss();
+                            }
+                        })
+                        .cancelable(false)
+                        .show();
+            }
         }
     }
 }
