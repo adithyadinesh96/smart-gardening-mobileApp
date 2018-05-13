@@ -40,6 +40,13 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -98,6 +105,10 @@ public class CameraActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private String device_id;
     private String timeStamp;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private DatabaseReference mDatabase;
+    private DatabaseReference device_ref;
 
     private class DownloadWebPageTask extends AsyncTask<String, Void, String> {
         @Override
@@ -159,9 +170,12 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         Bundle extras = getIntent().getExtras();
         device_id = extras.getString("device_id");
+        device_ref = FirebaseDatabase.getInstance().getReference().child("devices").child(device_id);
         textureView = (TextureView) findViewById(R.id.textureView);
         //From Java 1.4 , you can use keyword 'assert' to check expression true or false
         assert textureView != null;
@@ -265,6 +279,7 @@ public class CameraActivity extends AppCompatActivity {
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     // Get a URL to the uploaded content
                                     Uri currentUrl = taskSnapshot.getDownloadUrl();
+                                    addToFirebase(currentUrl);
                                     callImageApi(device_id);
                                 }
                             })
@@ -298,6 +313,28 @@ public class CameraActivity extends AppCompatActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private void addToFirebase(final Uri currentUrl) {
+        device_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild("previous_image")){
+                    String pcurrentUrl = dataSnapshot.child("current_image").getValue().toString();
+                    device_ref.child("previous_image").setValue(pcurrentUrl);
+                    device_ref.child("current_image").setValue(currentUrl.toString());
+                }
+                else{
+                    device_ref.child("previous_image").setValue("no_previous_image");
+                    device_ref.child("current_image").setValue(currentUrl.toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void callImageApi(String device_id) {

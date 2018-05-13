@@ -1,6 +1,7 @@
 package com.smart_garden.garden;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
@@ -54,6 +56,10 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
     private int deviceModeValue;
     private MaterialDialog alert_dialog;
     private Button analyseButton;
+    private TextView plantDataView;
+    private TextView leafDataView;
+    private TextView flowerDataView;
+    private CardView cardView4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +72,10 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
         waterState = findViewById(R.id.device_details_water_state);
         temperature = findViewById(R.id.device_details_temperature_reading);
         waterSwitch = findViewById(R.id.device_details_water_switch);
+        plantDataView = findViewById(R.id.device_details_plant_status);
+        leafDataView = findViewById(R.id.plant_details_leaf_data);
+        flowerDataView = findViewById(R.id.plant_details_flower_data);
+        cardView4 = findViewById(R.id.cardView4);
         changeDeviceName = findViewById(R.id.changeDeviceName);
         changeDeviceName.setOnClickListener(this);
         waterSwitch.setOnCheckedChangeListener(this);
@@ -124,6 +134,31 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
                         deviceMode.setChecked(true);
                     } else {
                         deviceMode.setChecked(false);
+                    }
+                    if(dataSnapshot.hasChild("image_analysis")){
+                        for(DataSnapshot image:dataSnapshot.child("image_analysis").getChildren()){
+                            String timestamp = image.getKey();
+                            String plant_detected = image.child("plant_detected").getValue().toString();
+                            if(plant_detected.toLowerCase().equals("true")) {
+                                String plant_data = image.child("image_comparision").getValue().toString();
+                                plantDataView.setText(plant_data);
+                                String leaf_data = image.child("dry_leaf_val").getValue().toString();
+                                leafDataView.setText(leaf_data);
+                                String flower_data = image.child("flower_detected").getValue().toString();
+                                if (flower_data.toLowerCase().equals("true")) {
+                                    flowerDataView.setText("Flower Detected");
+                                } else {
+                                    flowerDataView.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                            else{
+                                plantDataView.setText("Plant was not found in the Image");
+                                plantDataView.setTextColor(Color.RED);
+                            }
+                        }
+                    }
+                    else{
+                        cardView4.setVisibility(View.INVISIBLE);
                     }
                 }
 
