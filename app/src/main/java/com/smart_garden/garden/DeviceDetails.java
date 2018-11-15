@@ -1,6 +1,7 @@
 package com.smart_garden.garden;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,12 +9,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,6 +55,11 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
     private ToggleButton deviceMode;
     private int deviceModeValue;
     private MaterialDialog alert_dialog;
+    private Button analyseButton;
+    private TextView plantDataView;
+    private TextView leafDataView;
+    private TextView flowerDataView;
+    private CardView cardView4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +72,19 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
         waterState = findViewById(R.id.device_details_water_state);
         temperature = findViewById(R.id.device_details_temperature_reading);
         waterSwitch = findViewById(R.id.device_details_water_switch);
+        plantDataView = findViewById(R.id.device_details_plant_status);
+        leafDataView = findViewById(R.id.plant_details_leaf_data);
+        flowerDataView = findViewById(R.id.plant_details_flower_data);
+        cardView4 = findViewById(R.id.cardView4);
         changeDeviceName = findViewById(R.id.changeDeviceName);
         changeDeviceName.setOnClickListener(this);
         waterSwitch.setOnCheckedChangeListener(this);
         deviceMode = findViewById(R.id.device_mode_toggle);
         deviceMode.setOnCheckedChangeListener(this);
+        waterSwitch.setOnClickListener(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        analyseButton = findViewById(R.id.device_details_analyse);
+        analyseButton.setOnClickListener(this);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -120,6 +135,31 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
                     } else {
                         deviceMode.setChecked(false);
                     }
+                    if(dataSnapshot.hasChild("image_analysis")){
+                        for(DataSnapshot image:dataSnapshot.child("image_analysis").getChildren()){
+                            String timestamp = image.getKey();
+                            String plant_detected = image.child("plant_detected").getValue().toString();
+                            if(plant_detected.toLowerCase().equals("true")) {
+                                String plant_data = image.child("image_comparision").getValue().toString();
+                                plantDataView.setText(plant_data);
+                                String leaf_data = image.child("dry_leaf_val").getValue().toString();
+                                leafDataView.setText(leaf_data);
+                                String flower_data = image.child("flower_detected").getValue().toString();
+                                if (flower_data.toLowerCase().equals("true")) {
+                                    flowerDataView.setText("Flower Detected");
+                                } else {
+                                    flowerDataView.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                            else{
+                                plantDataView.setText("Plant was not found in the Image");
+                                plantDataView.setTextColor(Color.RED);
+                            }
+                        }
+                    }
+                    else{
+                        cardView4.setVisibility(View.INVISIBLE);
+                    }
                 }
 
                 @Override
@@ -145,18 +185,6 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
                 } else {
                     waterSwitch.setChecked(false);
                 }
-                alert_dialog = new MaterialDialog.Builder(this)
-                        .content(R.string.automatic_mode)
-                        .positiveText("Ok")
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                alert_dialog.dismiss();
-                            }
-                        })
-                        .cancelable(false)
-                        .show();
-
             } else {
                 if (isChecked) {
                     device_ref.child("switch_state").setValue(1);
@@ -268,6 +296,26 @@ public class DeviceDetails extends AppCompatActivity implements CompoundButton.O
                         }
                     })
                     .show();
+        }
+        else if(v == analyseButton){
+            Intent in = new Intent(DeviceDetails.this,CameraActivity.class);
+            in.putExtra("device_id",this.device_id);
+            startActivity(in);
+        }
+        else if(v==waterSwitch){
+            if(deviceModeValue == 1){
+                alert_dialog = new MaterialDialog.Builder(this)
+                        .content(R.string.automatic_mode)
+                        .positiveText("Ok")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                alert_dialog.dismiss();
+                            }
+                        })
+                        .cancelable(false)
+                        .show();
+            }
         }
     }
 }

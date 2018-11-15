@@ -55,4 +55,6 @@
     <string name="disclaimer">I agree that the products shown in the marketplace of Smart Garden android application are sample items and the payment paid in any form is not paid for the shown devices. I will not claim any product that was bought on the Smart Garden Application in any mode of payment and I will not demand a refund of money for the same.</string>
     <string name="compulsory_field">This field is compulsory</string>
     <string name="disclaimerTitle">Disclaimer</string>
+    <string name="analyze">Analyze</string>
+    <string name="uploading">Uploading</string>
 </resources>
